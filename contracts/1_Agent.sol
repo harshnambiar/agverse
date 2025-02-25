@@ -11,6 +11,7 @@ contract Agent {
    
     mapping (uint => address) public owners;
     mapping (uint => uint) public charges;
+    mapping (uint => uint) public redeemables;
     
     
     function getCount() public view returns (uint) {
@@ -34,6 +35,36 @@ contract Agent {
         owners[c] = msg.sender;
         charges[c] = percharge;
 
+    }
+
+    function useAgent(uint aid) public payable {
+        uint pc = charges[aid];
+        require (pc > 0, "not a valid agent");
+        require(
+            msg.value >=  pc * 0.001 ether, 
+            "not enough amount attached"
+        );
+        
+        
+        
+        uint c = redeemables[aid];
+        redeemables[aid] = c + 1;
+    }
+
+    function redeem(uint aid) public {
+        uint pc = charges[aid];
+        require (pc > 0, "not a valid agent");
+        address o = owners[aid];
+        require(
+            o == msg.sender, 
+            "can only redeem ones own agents"
+        );
+        uint c = redeemables[aid];
+        require(
+            c >=  1, 
+            "nothing to redeem"
+        );
+        payable(msg.sender).transfer(pc * 0.0009 ether);
     }
 
     
