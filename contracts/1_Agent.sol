@@ -12,10 +12,16 @@ contract Agent {
     mapping (uint => address) public owners;
     mapping (uint => uint) public charges;
     mapping (uint => uint) public redeemables;
+    mapping (address => uint[]) public agents;
     
     
     function getCount() public view returns (uint) {
         return count;
+    }
+
+    function getAgents() public view returns (uint[] memory) {
+        uint[] memory alist = agents[msg.sender];
+        return alist;
     }
     
 
@@ -34,6 +40,10 @@ contract Agent {
         uint c = count + 1;
         owners[c] = msg.sender;
         charges[c] = percharge;
+        uint[] storage alist = agents[msg.sender];
+        alist.push(c);
+        agents[msg.sender] = alist;
+        count = c;
 
     }
 
@@ -64,7 +74,8 @@ contract Agent {
             c >=  1, 
             "nothing to redeem"
         );
-        payable(msg.sender).transfer(pc * 0.0009 ether);
+        payable(msg.sender).transfer(c * 0.0009 ether);
+        redeemables[aid] = 0;
     }
 
     
