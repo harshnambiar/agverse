@@ -9,10 +9,10 @@ contract Agent {
     uint count = 0;
     
    
-    mapping (uint => address) public owners;
-    mapping (uint => uint) public charges;
-    mapping (uint => uint) public redeemables;
-    mapping (address => uint[]) public agents;
+    mapping (uint => address) public owners; // owner of each agent
+    mapping (uint => uint) public charges; // per usage charges for each agent
+    mapping (uint => uint) public redeemables; // earnings from the agent usage yet to be redeemed by the owner
+    mapping (address => uint[]) public agents; // all agents owned by a particular user
     
     
     function getCount() public view returns (uint) {
@@ -22,6 +22,15 @@ contract Agent {
     function getAgents() public view returns (uint[] memory) {
         uint[] memory alist = agents[msg.sender];
         return alist;
+    }
+
+    function getRedeemable(uint aid) public view returns (uint) {
+        require (owners[aid] == msg.sender, "this is an owner only function");
+        return redeemables[aid];
+    }
+
+    function getUsageCharge(uint aid) public view returns (uint) {
+        return charges[aid];
     }
     
 
